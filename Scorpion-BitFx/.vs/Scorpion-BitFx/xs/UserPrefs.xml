@@ -1,0 +1,25 @@
+﻿<Properties StartupConfiguration="{67488426-03D8-42CE-80BC-9ED081C91D47}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Scorpion-BitFx/Program.cs">
+    <Files>
+      <File FileName="Scorpion-BitFx/Program.cs" Line="8" Column="10" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Scorpion-BitFx" expanded="True">
+            <Node name="Scorpion-BitFx" expanded="True">
+              <Node name="Properties" expanded="True" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.Scorpion-BitFx PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

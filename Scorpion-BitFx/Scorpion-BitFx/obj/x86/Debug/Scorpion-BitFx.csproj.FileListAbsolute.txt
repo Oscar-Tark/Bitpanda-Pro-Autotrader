@@ -1,0 +1,10 @@
+/home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/bin/Debug/Scorpion-BitFx.exe
+/home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/bin/Debug/Scorpion-BitFx.pdb
+/home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/bin/Debug/RestSharp.dll
+/home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/bin/Debug/SimpleTCP.dll
+/home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/bin/Debug/RestSharp.xml
+/home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/obj/x86/Debug/Scorpion-BitFx.csprojAssemblyReference.cache
+/home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/obj/x86/Debug/Scorpion-BitFx.csproj.CoreCompileInputs.cache
+/home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/obj/x86/Debug/Scorpion-BitFx.csproj.CopyComplete
+/home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/obj/x86/Debug/Scorpion-BitFx.exe
+/home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/obj/x86/Debug/Scorpion-BitFx.pdb
