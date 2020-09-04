@@ -37,10 +37,18 @@
     <Reference Include="SimpleTCP">
       <HintPath>..\packages\SimpleTCP.1.0.24\lib\net45\SimpleTCP.dll</HintPath>
     </Reference>
+    <Reference Include="System.Json" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scorpion_JSON.cs" />
+    <Compile Include="Scorpion_TCP.cs" />
+    <Compile Include="Scorpion_BITFX.cs" />
+    <Compile Include="Scorpion_BITFX_objects.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
