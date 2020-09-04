@@ -74,9 +74,10 @@ namespace ScorpionBitFx
             client.AddDefaultHeader("Content-Type", "application/json ");
             client.AddDefaultHeader("Accept", "application/json ");
             client.AddDefaultHeader("Authorization", "Bearer " + AUTH);
+
             //client.Authenticator = new HttpBasicAuthenticator("username", "password");
 
-            var request = new RestRequest("", DataFormat.None);
+            var request = new RestRequest("", DataFormat.Json).AddJsonBody("");
             var response = await client.PostAsync<string>(request, CancellationToken.None);
 
             return response;

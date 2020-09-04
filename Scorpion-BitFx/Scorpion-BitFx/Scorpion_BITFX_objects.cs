@@ -61,12 +61,14 @@ namespace ScorpionBitFx
             public string balancesJSON;
             public string depositcryptoJSON;
             public string depositcryptoaddrJSON;
+            public string depositfiatJSON;
 
             //Contains all tickers
             public System.Collections.ArrayList tickers_ref;
             public System.Collections.ArrayList tickers;
 
             public JArray currencies;
+            public JArray deposit_BTC;
         };
 
         public struct BFX_URL

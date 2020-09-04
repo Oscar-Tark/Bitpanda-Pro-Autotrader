@@ -1,9 +1,9 @@
 ﻿<Properties StartupConfiguration="{67488426-03D8-42CE-80BC-9ED081C91D47}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Scorpion-BitFx/Scorpion_BITFX_objects.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Scorpion-BitFx/Scorpion_JSON.cs">
     <Files>
-      <File FileName="Scorpion-BitFx/Scorpion_JSON.cs" Line="55" Column="45" />
-      <File FileName="Scorpion-BitFx/Scorpion_BITFX.cs" Line="102" Column="72" />
-      <File FileName="Scorpion-BitFx/Scorpion_BITFX_objects.cs" Line="2" Column="18" />
+      <File FileName="Scorpion-BitFx/Scorpion_JSON.cs" Line="62" Column="41" />
+      <File FileName="Scorpion-BitFx/Scorpion_BITFX.cs" Line="136" Column="13" />
+      <File FileName="Scorpion-BitFx/Scorpion_BITFX_objects.cs" Line="64" Column="43" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -13,7 +13,7 @@
               <Node name="References" expanded="True">
                 <Node name="From Packages" expanded="True" />
               </Node>
-              <Node name="Scorpion_BITFX_objects.cs" selected="True" />
+              <Node name="Scorpion_JSON.cs" selected="True" />
             </Node>
           </Node>
         </State>

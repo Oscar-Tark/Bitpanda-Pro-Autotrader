@@ -119,11 +119,24 @@ namespace ScorpionBitFx
             return;
         }
 
-        public void bfxdepositaddress(ref string[] command)
+        public void bfxdepositcryptoaddress(ref string[] command)
         {
             bfx_objects.bfx_vars.depositcryptoaddrJSON = json.JSON_get_auth(bfx_objects.bfx_url.base_URL + bfx_objects.bfx_url.depositcryptoaddr + command[1], bfx_objects.bfx_settings.key);
             return;
         }
+
+        public void bfxdepositfiat(ref string[] command)
+        {
+            bfx_objects.bfx_vars.depositfiatJSON = json.JSON_get_auth(bfx_objects.bfx_url.base_URL + bfx_objects.bfx_url.deposit_fiat + bfx_objects.bfx_url.PREFFERED_FIAT, bfx_objects.bfx_settings.key);
+            return;
+        }
+
+        public void bfxwithdrawcrypto(ref string[] command)
+        {
+
+            return;
+        }
+
 
         //PARSE
         public void bfxjsontoobj(ref string[] command)
@@ -151,6 +164,7 @@ namespace ScorpionBitFx
             Do_on.write_cui("Balances: " + bfx_objects.bfx_vars.balancesJSON);
             Do_on.write_cui("Deposit crypto: " + bfx_objects.bfx_vars.depositcryptoJSON);
             Do_on.write_cui("Deposit crypto addr: " + bfx_objects.bfx_vars.depositcryptoaddrJSON);
+            Do_on.write_cui("Deposit fiat addr: " + bfx_objects.bfx_vars.depositfiatJSON);
             return;
         }
     }
