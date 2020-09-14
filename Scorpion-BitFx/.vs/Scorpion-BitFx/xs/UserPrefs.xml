@@ -1,9 +1,8 @@
 ﻿<Properties StartupConfiguration="{67488426-03D8-42CE-80BC-9ED081C91D47}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Scorpion-BitFx/Scorpion_JSON.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Scorpion-BitFx/EXCHANGE_Bitpanda_Interface.cs">
     <Files>
-      <File FileName="Scorpion-BitFx/Scorpion_JSON.cs" Line="62" Column="41" />
-      <File FileName="Scorpion-BitFx/Scorpion_BITFX.cs" Line="136" Column="13" />
-      <File FileName="Scorpion-BitFx/Scorpion_BITFX_objects.cs" Line="64" Column="43" />
+      <File FileName="Scorpion-BitFx/Scorpion_COIN.cs" Line="79" Column="58" />
+      <File FileName="Scorpion-BitFx/EXCHANGE_Bitpanda_Interface.cs" Line="37" Column="59" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -13,7 +12,8 @@
               <Node name="References" expanded="True">
                 <Node name="From Packages" expanded="True" />
               </Node>
-              <Node name="Scorpion_JSON.cs" selected="True" />
+              <Node name="Packages" expanded="True" />
+              <Node name="EXCHANGE_Bitpanda_Interface.cs" selected="True" />
             </Node>
           </Node>
         </State>

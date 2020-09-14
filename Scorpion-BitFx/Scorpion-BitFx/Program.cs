@@ -18,17 +18,20 @@ namespace ScorpionBitFx
         public Scorpion()
         {
             //Start TCP
-            write_cui("Scorpion BITFX [Cryptocurrency trading] hub v0.1b 2020+ <Oscar Arjun Singh Tark>");
-            write_cui("Please enter a valid TCP port to bind to:");
+            write_cui("Scorpion BITFX [Cryptocurrency trading] hub v0.1b GNU GPL 2020+ <Oscar Arjun Singh Tark>");
 
-            try
-            {
-                tcp = new Scorpion_TCP(Convert.ToInt32(Console.ReadLine()), this);
+            Console.WriteLine("Run as networked instance? (Y/N)");
+
+            if (Console.ReadLine().ToLower() == "y")
+            { 
+                write_cui("Please enter a valid URL and PORT to bind to:");
+                try
+                {
+                    tcp = new Scorpion_TCP(Console.ReadLine(), Convert.ToInt32(Console.ReadLine()), this);
+                }
+                catch (Exception erty) { write_error("Unable to establish a network server due to: " + erty.Message); }
             }
-            catch (Exception erty) { write_error("Unable to establish a network server due to: " + erty.Message); }
-
             bfx = new Scorpion_BITFX_BITPANDA(this);
-
             while (true)
                 execute_command(Console.ReadLine());
         }

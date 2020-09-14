@@ -41,6 +41,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="MongoDB.Bson">
+      <HintPath>..\packages\MongoDB.Bson.2.11.1\lib\net452\MongoDB.Bson.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -49,9 +52,16 @@
     <Compile Include="Scorpion_TCP.cs" />
     <Compile Include="Scorpion_BITFX.cs" />
     <Compile Include="Scorpion_BITFX_objects.cs" />
+    <Compile Include="Scorpion_COIN.cs" />
+    <Compile Include="EXCHANGE_Bitpanda.cs" />
+    <Compile Include="EXCHANGE_Bitpanda_Interface.cs" />
+    <Compile Include="Scorpion_DATETIME.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="EXHANGES\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

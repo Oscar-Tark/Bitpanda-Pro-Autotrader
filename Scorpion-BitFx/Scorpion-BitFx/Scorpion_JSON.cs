@@ -11,19 +11,17 @@ namespace ScorpionBitFx
 {
     public class ScorpionJSON
     {
-        Scorpion_BITFX_BITPANDA Do_on;
-        public ScorpionJSON(Scorpion_BITFX_BITPANDA fm1)
+        public ScorpionJSON()
         {
-            Do_on = fm1;
             return;
         }
 
         public string JSON_get(string URL)
         {
-            Console.WriteLine("JSON: " + URL);
+            //Console.WriteLine("JSON: " + URL);
             Task<string> ts = JSON_getAsync(URL);
             ts.Wait();
-            Console.WriteLine("Done JSON: " + URL);
+            //Console.WriteLine("Done JSON: " + URL);
             return ts.Result;
         }
 
@@ -82,10 +80,16 @@ namespace ScorpionBitFx
 
             return response;
         }
+
         //Convert
         public JArray jsontoarray(ref string JSON)
         {
             return JArray.Parse(JSON);
+        }
+
+        public JObject jsontoobject(ref string JSON)
+        {
+            return JObject.Parse(JSON);
         }
     }
 }

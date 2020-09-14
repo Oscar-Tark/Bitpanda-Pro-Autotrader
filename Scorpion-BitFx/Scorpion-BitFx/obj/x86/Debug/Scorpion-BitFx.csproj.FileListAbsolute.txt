@@ -10,3 +10,5 @@
 /home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/obj/x86/Debug/Scorpion-BitFx.csprojAssemblyReference.cache
 /home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/bin/Debug/Newtonsoft.Json.dll
 /home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/bin/Debug/Newtonsoft.Json.xml
+/home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/bin/Debug/MongoDB.Bson.dll
+/home/ferret/GIT/Scorpion-BITFx/Scorpion-BitFx/Scorpion-BitFx/bin/Debug/MongoDB.Bson.xml

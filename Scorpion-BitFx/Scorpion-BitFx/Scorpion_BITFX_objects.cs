@@ -1,54 +1,26 @@
 ﻿using System;
+using System.Collections;
 using Newtonsoft.Json.Linq;
 
 namespace ScorpionBitFx
 {
-    public class Scorpion_BITFX_objects
+    public partial class EXCHANGE
     {
-        public BFX_settings bfx_settings;
-        public BFX_VARS bfx_vars;
-        public BFX_URL bfx_url;
+        //BITPANDA EXCHANGE
+        public EXCHANGE_settings bfx_settings;
+        public EXCHANGE_JSON bfx_vars;
+        public EXCHANGE_URL bfx_url;
 
-        public Scorpion_BITFX_objects()
-        {
-            bfx_url = new BFX_URL();
-            bfx_vars = new BFX_VARS();
-            bfx_settings = new BFX_settings();
+        public ArrayList EXCHANGE_COINS_JSON = new ArrayList();
+        public ArrayList EXCHANGE_COINS_REF = new ArrayList();
+        public ArrayList EXCHANGE_COINS = new ArrayList();
 
-            bfx_url.public_URL = "https://api.exchange.bitpanda.com/public/v1/";
-            bfx_url.base_URL = "https://api.exchange.bitpanda.com/public/v1/account/";
-            bfx_url.trades = "trades";
-            bfx_url.currencies = "currencies";
-            bfx_url.candles = "candlesticks";
-            bfx_url.balances = "balances";
-            bfx_url.deposit = "deposit";
-            bfx_url.instruments = "instruments";
-            bfx_url.orderbook = "order-book/";
-            bfx_url.marketticker = "market-ticker";
-            bfx_url.price_ticker = "price-ticks/";
-            bfx_url.time = "time";
-            bfx_url.fees = "fees";
-            bfx_url.depositcrypto = "deposit/crypto";
-            bfx_url.depositcryptoaddr = "deposit/crypto/";
-            bfx_url.deposit_fiat = "deposit/fiat/";
-            bfx_url.PREFFERED_FIAT = "EUR";
-            bfx_url.FIAT = new string[1];
-            bfx_url.FIAT[0] = "EUR";
-
-            bfx_vars.currencies = new JArray();
-            bfx_vars.tickers_ref = new System.Collections.ArrayList();
-            bfx_vars.tickers = new System.Collections.ArrayList();
-            return;
-        }
-
-        public struct BFX_settings
+        public struct EXCHANGE_settings
         {
             public string key;
-            string uname;
-            string pwd;
         };
 
-        public struct BFX_VARS
+        public struct EXCHANGE_JSON
         {
             public string currenciesJSON;
             public string candlesJSON;
@@ -66,12 +38,9 @@ namespace ScorpionBitFx
             //Contains all tickers
             public System.Collections.ArrayList tickers_ref;
             public System.Collections.ArrayList tickers;
-
-            public JArray currencies;
-            public JArray deposit_BTC;
         };
 
-        public struct BFX_URL
+        public struct EXCHANGE_URL
         {
             public string public_URL;
             public string currencies;
@@ -91,6 +60,7 @@ namespace ScorpionBitFx
             public string API_KY;
             public string candles;
             public string PREFFERED_FIAT;
+            public string period;
             public string[] FIAT;// = { "EUR", "USD" };
         }
     }
