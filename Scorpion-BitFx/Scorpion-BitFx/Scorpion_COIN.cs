@@ -12,14 +12,30 @@ namespace ScorpionBitFx
         Scorpion_DATETIME scdt = new Scorpion_DATETIME();
         EXCHANGE ex; 
         ScorpionJSON json = new ScorpionJSON();
+        Scorpion_LOG scl;
 
-        public COIN(string symbol, int precision, EXCHANGE exchange, bool Autobuysell)
+        enum signal_translations
         {
+            neutral,
+            sell,
+            buy
+        }
+
+        public COIN(string symbol, int precision, EXCHANGE exchange, bool Autobuysell, string log_dir)
+        {
+            scl = new Scorpion_LOG(log_dir);
             ex = exchange;
             Console.WriteLine("Starting coin {0} with precision {1}", symbol, precision);
             cs.buy_sell_type = Autobuysell;
             Console.WriteLine("Automatic buy sells: {0}", cs.buy_sell_type);
 
+            if (!Autobuysell)
+            {
+                Console.WriteLine("Please enter your buy price preference: ");
+                cs.buy_sell_type_buy_at = Convert.ToDouble(Console.ReadLine());
+                Console.WriteLine("Please enter your sell price preference: ");
+                cs.buy_sell_type_sell_at = Convert.ToDouble(Console.ReadLine());
+            }
             cs.precision = precision;
             cs.symbol = symbol;
             cs.period = "1";
@@ -39,8 +55,8 @@ namespace ScorpionBitFx
         struct COIN_settings
         {
             public bool buy_sell_type; //true = auto / false = manual
-            public double buy_sell_type_buy;
-            public double buy_sell_type_sell;
+            public double buy_sell_type_buy_at;
+            public double buy_sell_type_sell_at;
 
             public bool failed;
             public string CANDLE_JSON;
@@ -48,6 +64,7 @@ namespace ScorpionBitFx
             public string symbol;
             public int precision;
             public string unit;
+            public string unit_day;
             public string period;
             public string[] time_interval;
 
@@ -61,15 +78,21 @@ namespace ScorpionBitFx
             public double low;
             public double high_average;
             public double low_average;
+
+            public double high_mid_average;
+            public double low_mid_average;
             //<--END
 
             string wallet_address;
-            public int signal; //0=neutral -1=sell 1=buy
+            public int signal; //0=neutral 1=sell 2=buy
 
             JArray transactions;
 
             //Points to last transaction in 'transactions'
             int ptr_last_transaction;
+
+            public double manual_buy;
+            public double manual_sell;
         };
 
         private void start_ticker()
@@ -116,15 +139,21 @@ namespace ScorpionBitFx
                     cs.lows[ndx] = (jobj.Value<double>("low"));
                     ndx++;
                 }
-                cs.high_average = coin_average(ref cs.highs);
-                cs.low_average = coin_average(ref cs.lows);
+                cs.high_average = coin_average(cs.highs);
+                cs.low_average = coin_average(cs.lows);
                 cs.low = cs.lows.Min();
                 cs.high = cs.highs.Max();
+
+                cs.high_mid_average = coin_average(new double[2] { cs.high, cs.high_average });
+                cs.low_mid_average = coin_average(new double[2] { cs.low, cs.low_average });
 
                 //Get Current price and check against averages to create signal
                 //Code here
 
-                Console.WriteLine("Decoded {0} on (Auto Buy/Sell: {6}) [Current price: {5}][High: {1}][Low: {2}][Average High: {3}][Average Low: {4}]", cs.symbol, cs.high, cs.low, cs.high_average, cs.low_average, cs.current_price, cs.buy_sell_type);
+                get_signal();
+                trade();
+
+                Console.WriteLine("Decoded {0} on (Auto Buy/Sell: {6}) [Current price: {5}][High: {1}][Low: {2}][Average High: {3}][Average Low: {4}][Mid-Average High: {7}][Mid-Average Low: {8}]", cs.symbol, cs.high, cs.low, cs.high_average, cs.low_average, cs.current_price, cs.buy_sell_type, cs.high_mid_average, cs.low_mid_average);
 
                 if (cs.failed == true)
                 {
@@ -136,15 +165,13 @@ namespace ScorpionBitFx
             {
                 Console.WriteLine("Unable to decode {0}. Aborting on next failure", cs.symbol);
                 if (cs.failed)
-                {
                     kill();
-                }
                 cs.failed = true;
             }
             return;
         }
 
-        private double coin_average(ref double[] Averagable)
+        private double coin_average(double[] Averagable)
         {
             return Queryable.Average(Averagable.AsQueryable());
         }
@@ -157,10 +184,41 @@ namespace ScorpionBitFx
             return;
         }
 
-        //Buy-sell
+        // Manual Buy-sell
+        private void get_signal()
+        {
+            //Create buy sell signal
+            if (cs.buy_sell_type)
+            {
+                if (cs.current_price >= cs.high_mid_average)
+                    cs.signal = 1;
+                else if (cs.current_price <= cs.low_mid_average)
+                    cs.signal = 2;
+                else
+                    cs.signal = 0;
+            }
+            else
+            {
+                if (cs.current_price >= cs.buy_sell_type_sell_at)
+                    cs.signal = 2;
+                else if (cs.current_price <= cs.buy_sell_type_buy_at)
+                    cs.signal = 1;
+                else cs.signal = 0;
+            }
+            Console.WriteLine("Signal for {0} set to {1}", cs.symbol, cs.signal);
+            return;
+        }
+
         private void trade()
         {
             //Do buysell operation if buy_sell_type not auto kill after transaction
+            //Check and compare averages vs current price
+            if (cs.signal == 2)
+                buy();
+            else if (cs.signal == 1)
+                sell();
+            else
+                Console.WriteLine("Neutral on {0}", cs.symbol);
 
             if (cs.buy_sell_type == false)
                 kill();
@@ -168,12 +226,21 @@ namespace ScorpionBitFx
 
         private void buy()
         {
-
+            Console.WriteLine("Buying {0}", cs.symbol);
+            scl.write("Signal:" + cs.signal + " Symbol:" + cs.symbol + " Current price:" + cs.current_price + " High:" + cs.high + " Low:" + cs.low);
+            return;
         }
 
         private void sell()
         {
+            Console.WriteLine("Selling {0}", cs.symbol);
+            scl.write("Signal:" + cs.signal + " Symbol:" + cs.symbol + " Current price:" + cs.current_price + " High:" + cs.high + " Low:" + cs.low + " Tax:" + calculate_tax());
+            return;
+        }
 
+        private double calculate_tax()
+        {
+            return (cs.current_price / 100) * cs.current_price;
         }
 
         private void clear_all()

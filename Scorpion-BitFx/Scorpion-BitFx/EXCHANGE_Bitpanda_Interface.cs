@@ -24,6 +24,9 @@ namespace ScorpionBitFx
         {
             bfx_vars.currenciesJSON = json.JSON_get(bfx_url.public_URL + bfx_url.currencies);
             bool auto_by_sell = true; bool auto_buy_sell_all = false; string yna;
+
+            Console.WriteLine("Please enter a preffered log path without a filename with a trailing backslash: ");
+            string log_dir = Console.ReadLine();
             foreach (JObject jobj in json.jsontoarray(ref bfx_vars.currenciesJSON))
             {
                 if (jobj.Value<string>("code") != "EUR")
@@ -33,7 +36,7 @@ namespace ScorpionBitFx
                         Console.WriteLine("Automatic buy sells for {0}? (Y/N/ALL)", jobj.Value<string>("code"));
                         yna = Console.ReadLine().ToLower();
                         if (yna == "n")
-                            auto_by_sell = true;
+                            auto_by_sell = false;
                         else if (yna == "all" || yna == "a")
                         {
                             auto_by_sell = true;
@@ -43,7 +46,7 @@ namespace ScorpionBitFx
 
                     EXCHANGE_COINS_JSON.Add(jobj);
                     EXCHANGE_COINS_REF.Add(jobj);
-                    EXCHANGE_COINS.Add(new COIN(jobj.Value<string>("code"), jobj.Value<int>("precision"), this, auto_by_sell));
+                    EXCHANGE_COINS.Add(new COIN(jobj.Value<string>("code"), jobj.Value<int>("precision"), this, auto_by_sell, log_dir));
                 }
             }
 
@@ -70,6 +73,31 @@ namespace ScorpionBitFx
             return;
         }
 
+        public string xcandles(string symbol, string unit, string period, string date_from, string time_from, string date_to, string time_to)
+        {
+            //::currency, *unit, *period, *fromdate, *fromtime, *todate, *totime
+            //Example bfxcandles::*BTC *HOURS *1 *2019-10-03 *00:00:00 *2019-10-04 *00:00:00
+            return json.JSON_get(bfx_url.public_URL + bfx_url.candles + "/" + symbol + "_" + bfx_url.PREFFERED_FIAT + "?unit=" + unit + "&period=" + period + "&from=" + date_from + "T" + time_from + "Z&to=" + date_to + "T" + time_to + "Z");
+        }
+
+        public string xinstrumentticker(string symbol)
+        {
+            //Gets current market ticker values for Crypto symbol
+            Console.WriteLine(bfx_url.public_URL + bfx_url.marketticker + symbol + "_" + bfx_url.PREFFERED_FIAT);
+            return json.JSON_get(bfx_url.public_URL + bfx_url.marketticker + symbol + "_" + bfx_url.PREFFERED_FIAT);
+        }
+
+        public void bfxtime(ref string[] command)
+        {
+            bfx_vars.timeJSON = json.JSON_get(bfx_url.public_URL + bfx_url.time);
+            return;
+        }
+
+        public void xorder(ref string symbol, string side, string type, string amount)
+        {
+
+            return;
+        }
         /*public void xinstruments()
         {
             //::
@@ -77,12 +105,6 @@ namespace ScorpionBitFx
             return;
         }*/
 
-        public string xcandles(string symbol, string unit, string period, string date_from, string time_from, string date_to, string time_to)
-        {
-            //::currency, *unit, *period, *fromdate, *fromtime, *todate, *totime
-            //Example bfxcandles::*BTC *HOURS *1 *2019-10-03 *00:00:00 *2019-10-04 *00:00:00
-            return json.JSON_get(bfx_url.public_URL + bfx_url.candles + "/" + symbol + "_" + bfx_url.PREFFERED_FIAT + "?unit=" + unit + "&period=" + period + "&from=" + date_from + "T" + time_from + "Z&to=" + date_to + "T" + time_to + "Z");
-        }
 
 
         /*public void bfxorderbook(ref string[] command)
@@ -99,21 +121,9 @@ namespace ScorpionBitFx
             return;
         }*/
 
-        public string xinstrumentticker(string symbol)
-        {
-            //Gets current market ticker values for Crypto symbol
-            Console.WriteLine(bfx_url.public_URL + bfx_url.marketticker + symbol + "_" + bfx_url.PREFFERED_FIAT);
-            return json.JSON_get(bfx_url.public_URL + bfx_url.marketticker + symbol + "_" + bfx_url.PREFFERED_FIAT);
-        }
-
-        public void bfxtime(ref string[] command)
-        {
-            bfx_vars.timeJSON = json.JSON_get(bfx_url.public_URL + bfx_url.time);
-            return;
-        }
 
         //PRIVATE
-        public void xbalances()
+        /*public void xbalances()
         {
             if (bfx_settings.key == null)
                 Console.WriteLine("No authorization API key available. Please use bfxkey::*key in order to set your API key");
@@ -144,7 +154,7 @@ namespace ScorpionBitFx
         {
 
             return;
-        }
+        }*/
 
 
         //PARSE

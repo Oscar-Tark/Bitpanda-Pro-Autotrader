@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Threading;
-using System.Diagnostics;
 
 namespace ScorpionBitFx
 {
@@ -81,12 +80,6 @@ namespace ScorpionBitFx
 
         public void __start()
         {
-            //Starts the exchange
-            //Start the Trading engine
-            //ThreadStart ths_engine = new ThreadStart(start_engine);
-            //th_engine = new Thread(ths_engine);
-            //th_engine.Priority = ThreadPriority.AboveNormal;
-            //th_engine.Start();
             start_engine();
             return;
         }
@@ -94,9 +87,6 @@ namespace ScorpionBitFx
         //Trading Engine
         private void start_engine()
         {
-            //interval = interval in seconds
-            //Console.WriteLine("Please enter a time interval for the Trading engine to trade on:");
-            //int interval = Convert.ToInt32(Console.ReadLine());
             engine(null);
             return;
         }
@@ -111,8 +101,6 @@ namespace ScorpionBitFx
             xcoins();
             xfees();
             xprefferedfiat();
-            //xinstruments();
-            xbalances();
             return;
         }
     }

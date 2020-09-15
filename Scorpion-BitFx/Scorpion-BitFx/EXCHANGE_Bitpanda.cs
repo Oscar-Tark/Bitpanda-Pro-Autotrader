@@ -24,6 +24,7 @@ namespace ScorpionBitFx
             bfx_url.PREFFERED_FIAT = "EUR";
             bfx_url.FIAT = new string[1];
             bfx_url.FIAT[0] = "EUR";
+            bfx_url.orders = "orders";
             return bfx_url;
         }
     }

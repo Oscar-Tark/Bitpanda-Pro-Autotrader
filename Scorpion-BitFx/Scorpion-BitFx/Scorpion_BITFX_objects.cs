@@ -62,6 +62,7 @@ namespace ScorpionBitFx
             public string PREFFERED_FIAT;
             public string period;
             public string[] FIAT;// = { "EUR", "USD" };
+            public string orders;
         }
     }
 }
