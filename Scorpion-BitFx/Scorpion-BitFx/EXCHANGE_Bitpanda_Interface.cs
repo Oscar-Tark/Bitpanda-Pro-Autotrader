@@ -14,9 +14,10 @@ namespace ScorpionBitFx
         }
 
         //Get wallet
-        public string xwallet(string symbol)
+        public string xwallet(string symbol, string auth)
         {
-            return "";
+            Console.WriteLine(bfx_url.base_URL + bfx_url.balances);
+            return json.JSON_get_auth(bfx_url.base_URL + bfx_url.balances, auth);
         }
 
         //Basic Bitpanda functions
@@ -24,29 +25,35 @@ namespace ScorpionBitFx
         {
             bfx_vars.currenciesJSON = json.JSON_get(bfx_url.public_URL + bfx_url.currencies);
             bool auto_by_sell = true; bool auto_buy_sell_all = false; string yna;
+            //bool run_all = false;
 
-            Console.WriteLine("Please enter a preffered log path without a filename with a trailing backslash: ");
-            string log_dir = Console.ReadLine();
+            Console.WriteLine("LINK is the only coin available in BETA mode");
             foreach (JObject jobj in json.jsontoarray(ref bfx_vars.currenciesJSON))
             {
-                if (jobj.Value<string>("code") != "EUR")
+                // Run all: if (jobj.Value<string>("code") != "EUR" && jobj.Value<string>("code") != "CHF")
+                //Run one only:
+                if(jobj.Value<string>("code") == "LINK")
                 {
-                    if (!auto_buy_sell_all)
+                    Console.WriteLine("Run COIN: {0}? (Y/N)", jobj.Value<string>("code"));
+                    if (Console.ReadLine().ToLower() == "y")
                     {
-                        Console.WriteLine("Automatic buy sells for {0}? (Y/N/ALL)", jobj.Value<string>("code"));
-                        yna = Console.ReadLine().ToLower();
-                        if (yna == "n")
-                            auto_by_sell = false;
-                        else if (yna == "all" || yna == "a")
+                        if (!auto_buy_sell_all)
                         {
-                            auto_by_sell = true;
-                            auto_buy_sell_all = true;
+                            Console.WriteLine("Automatic buy sells for {0}? (Y/N/ALL)", jobj.Value<string>("code"));
+                            yna = Console.ReadLine().ToLower();
+                            if (yna == "n")
+                                auto_by_sell = false;
+                            else if (yna == "all" || yna == "a")
+                            {
+                                auto_by_sell = true;
+                                auto_buy_sell_all = true;
+                            }
                         }
-                    }
 
-                    EXCHANGE_COINS_JSON.Add(jobj);
-                    EXCHANGE_COINS_REF.Add(jobj);
-                    EXCHANGE_COINS.Add(new COIN(jobj.Value<string>("code"), jobj.Value<int>("precision"), this, auto_by_sell, log_dir));
+                        EXCHANGE_COINS_JSON.Add(jobj);
+                        EXCHANGE_COINS_REF.Add(jobj);
+                        EXCHANGE_COINS.Add(new COIN(jobj.Value<string>("code"), jobj.Value<int>("precision"), this, auto_by_sell, bfx_settings.key));
+                    }
                 }
             }
 
@@ -93,7 +100,14 @@ namespace ScorpionBitFx
             return;
         }
 
-        public void xorder(ref string symbol, string side, string type, string amount)
+        public string xorder(ref string symbol, string side, string type, string amount)
+        {
+            //Console.WriteLine("order: {0}", "{ \"instrument_code\": \"" + symbol + "_" + bfx_url.PREFFERED_FIAT + "\", \"side\": \"" + side + "\", \"type\": \"" + type + "\", \"amount\": \"" + amount + "\" }");
+            //return json.JSON_post_auth(bfx_url.base_URL + bfx_url.orders, bfx_settings.key, "{ \"instrument_code\": \"" + symbol + "_" + bfx_url.PREFFERED_FIAT + "\", \"side\": \"" + side + "\", \"type\": \"" + type + "\", \"amount\": \"" + amount + "\" }");
+            return json.JSON_post_auth(bfx_url.base_URL + bfx_url.orders, bfx_settings.key, new string[] { "instrument_code", "side", "type", "amount" }, new string[] { symbol + "_" + bfx_url.PREFFERED_FIAT, side, type, amount });
+        }
+
+        private void flush_orders()
         {
 
             return;

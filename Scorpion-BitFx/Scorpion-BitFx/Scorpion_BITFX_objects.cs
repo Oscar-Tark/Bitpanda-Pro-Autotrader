@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using Newtonsoft.Json.Linq;
+﻿using System.Collections;
 
 namespace ScorpionBitFx
 {

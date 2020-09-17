@@ -21,9 +21,9 @@ namespace ScorpionBitFx
             buy
         }
 
-        public COIN(string symbol, int precision, EXCHANGE exchange, bool Autobuysell, string log_dir)
+        public COIN(string symbol, int precision, EXCHANGE exchange, bool Autobuysell, string auth)
         {
-            scl = new Scorpion_LOG(log_dir);
+            scl = new Scorpion_LOG();
             ex = exchange;
             Console.WriteLine("Starting coin {0} with precision {1}", symbol, precision);
             cs.buy_sell_type = Autobuysell;
@@ -41,6 +41,9 @@ namespace ScorpionBitFx
             cs.period = "1";
             cs.unit = "HOURS";
             cs.signal = 0;
+            cs.key = auth;
+            cs.current_balance = 0;
+            cs.EUR_balance = 0;
 
             //start_ticker();
             return;
@@ -83,7 +86,11 @@ namespace ScorpionBitFx
             public double low_mid_average;
             //<--END
 
-            string wallet_address;
+            public string key;
+            public string account_id;
+            public double current_balance;
+            public double EUR_balance;
+            public string current_balance_JSON;
             public int signal; //0=neutral 1=sell 2=buy
 
             JArray transactions;
@@ -214,9 +221,15 @@ namespace ScorpionBitFx
             //Do buysell operation if buy_sell_type not auto kill after transaction
             //Check and compare averages vs current price
             if (cs.signal == 2)
+            {
+                get_balance();
                 buy();
+            }
             else if (cs.signal == 1)
+            {
+                get_balance();
                 sell();
+            }
             else
                 Console.WriteLine("Neutral on {0}", cs.symbol);
 
@@ -224,9 +237,65 @@ namespace ScorpionBitFx
                 kill();
         }
 
+        //Not the best way, but ok for now in a small scale
+        private void get_balance()
+        {
+            cs.current_balance_JSON = ex.xwallet(cs.symbol, cs.key);
+            //Console.WriteLine(cs.current_balance_JSON);
+            JObject jobj = json.jsontoobject(ref cs.current_balance_JSON);
+            cs.account_id = jobj.Value<string>("account_id");
+            //Console.WriteLine("VAL: {0}", cs.account_id);
+
+
+            //Console.WriteLine("Code: {0}", jobj["balances"][0]["currency_code"]);
+            JArray jarr = (JArray)jobj["balances"];
+
+            foreach(JObject j_inobjs in jarr)
+            {
+                if (j_inobjs.Value<string>("currency_code") == ex.bfx_url.PREFFERED_FIAT)
+                {
+                    cs.EUR_balance = j_inobjs.Value<double>("available");
+                }
+                else if (j_inobjs.Value<string>("currency_code") == cs.symbol)
+                {
+                    cs.current_balance = j_inobjs.Value<double>("available");
+                    break;
+                }
+            }
+            Console.WriteLine("{0} at: {1}", ex.bfx_url.PREFFERED_FIAT, cs.EUR_balance);
+            Console.WriteLine("{0} at: {1}", cs.symbol, cs.current_balance);
+            //JToken bals = jobj["balances"];
+
+            /*foreach (JObject jobj in jarr)
+            {
+                //foreach(JObject in )
+                //string code = (jobj.Value<string>("currency_code"));
+                //Console.WriteLine(code);
+            }*/
+            return;
+        }
+
         private void buy()
         {
             Console.WriteLine("Buying {0}", cs.symbol);
+            if (cs.EUR_balance > 0)
+            {
+                //buy
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                Console.WriteLine("Buying {0} {1} of {2}", cs.EUR_balance, ex.bfx_url.PREFFERED_FIAT, cs.symbol);
+                Console.ForegroundColor = ConsoleColor.White;
+                string json_buy = ex.xorder(ref cs.symbol, "BUY", "MARKET", (cs.current_price / cs.EUR_balance).ToString());
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine(json_buy);
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.WriteLine("Unable to buy not enough {0}: {1}", ex.bfx_url.PREFFERED_FIAT, cs.EUR_balance);
+                Console.ForegroundColor = ConsoleColor.White;
+            }
             scl.write("Signal:" + cs.signal + " Symbol:" + cs.symbol + " Current price:" + cs.current_price + " High:" + cs.high + " Low:" + cs.low);
             return;
         }
@@ -234,6 +303,18 @@ namespace ScorpionBitFx
         private void sell()
         {
             Console.WriteLine("Selling {0}", cs.symbol);
+            if (cs.current_balance > 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Selling {0} of {1}", cs.current_balance, cs.symbol);
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.WriteLine("Unable to sell not enough {0} to sell at {1}", cs.symbol, cs.current_balance);
+                Console.ForegroundColor = ConsoleColor.White;
+            }
             scl.write("Signal:" + cs.signal + " Symbol:" + cs.symbol + " Current price:" + cs.current_price + " High:" + cs.high + " Low:" + cs.low + " Tax:" + calculate_tax());
             return;
         }

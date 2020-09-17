@@ -6,10 +6,16 @@ namespace ScorpionBitFx
     public class Scorpion_LOG
     {
         string dir;
-        const string log_file = "scorpion_bitfx.log";
-        public Scorpion_LOG(string log_dir)
+        private string get_name()
         {
-            dir = log_dir;
+            return System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+        }
+
+        const string log_file = "scorpion_bitfx.log";
+        public Scorpion_LOG()
+        {
+            string name = get_name();
+            dir = "/home/" + name + "/";
             dir = dir + log_file;
             Console.WriteLine("Log file path is: {0}", dir);
         }
