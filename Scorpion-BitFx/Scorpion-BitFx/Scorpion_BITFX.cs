@@ -22,23 +22,28 @@ namespace ScorpionBitFx
         }
 
         //Does not support var_get. *var will take actual value as string *var results as 'var'. [2] is where vars start
-        public void do_bitfx(ref string[] command)
+        public bool do_bitfx(ref string[] command)
         {
+            bool success;
             Console.ForegroundColor = ConsoleColor.Yellow;
 
             try
             {
                 Do_on.write_cui(">> Executing: " + command[0]);
                 this.GetType().GetMethod(command[0], System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).Invoke(this, new object[] { command });
+                success = true;
             }
-            catch(Exception e) { Do_on.write_error("An error occured: " + e.Message); }
+            catch(Exception e) { Do_on.write_error("An error occured: " + e.Message); success = false; }
             Do_on.var_stringarray_dispose(ref command);
-            return;
+            return success;
         }
 
         public void start(ref string[] commands)
         {
+            //old
             //::*typeofexchangeint, *name
+            //new
+            //::*typeofexchangeint, *name, *autotrade, *coin, *coin, *coin
             int this_instance = 0;
             try
             {
@@ -95,7 +100,8 @@ namespace ScorpionBitFx
         {
             //Get API key
             Console.WriteLine("Enter your Exchange key:");
-            xkey(Console.ReadLine());
+            Console.Out.Flush();
+            xkey(Console.In.ReadLine());
             bfx_url.period = "1";
             //Get basic data
             xcoins();

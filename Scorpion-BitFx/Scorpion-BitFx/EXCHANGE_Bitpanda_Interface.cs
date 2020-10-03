@@ -27,12 +27,13 @@ namespace ScorpionBitFx
             bool auto_by_sell = true; bool auto_buy_sell_all = false; string yna;
             //bool run_all = false;
 
-            Console.WriteLine("LINK is the only coin available in BETA mode");
+            Console.WriteLine("XRP is the only coin available in BETA mode");
+            bfx_vars.instrumentsJSON = xinstruments();
             foreach (JObject jobj in json.jsontoarray(ref bfx_vars.currenciesJSON))
             {
                 // Run all: if (jobj.Value<string>("code") != "EUR" && jobj.Value<string>("code") != "CHF")
                 //Run one only:
-                if(jobj.Value<string>("code") == "LINK")
+                if(jobj.Value<string>("code") == "XRP")
                 {
                     Console.WriteLine("Run COIN: {0}? (Y/N)", jobj.Value<string>("code"));
                     if (Console.ReadLine().ToLower() == "y")
@@ -90,8 +91,13 @@ namespace ScorpionBitFx
         public string xinstrumentticker(string symbol)
         {
             //Gets current market ticker values for Crypto symbol
-            Console.WriteLine(bfx_url.public_URL + bfx_url.marketticker + symbol + "_" + bfx_url.PREFFERED_FIAT);
+            //Console.WriteLine(bfx_url.public_URL + bfx_url.marketticker + symbol + "_" + bfx_url.PREFFERED_FIAT);
             return json.JSON_get(bfx_url.public_URL + bfx_url.marketticker + symbol + "_" + bfx_url.PREFFERED_FIAT);
+        }
+
+        public string xinstruments()
+        {
+            return json.JSON_get(bfx_url.public_URL + bfx_url.instruments);
         }
 
         public void bfxtime(ref string[] command)
@@ -100,11 +106,11 @@ namespace ScorpionBitFx
             return;
         }
 
-        public string xorder(ref string symbol, string side, string type, string amount)
+        public string xorder(ref string symbol, string side, string type, string amount, string id)
         {
             //Console.WriteLine("order: {0}", "{ \"instrument_code\": \"" + symbol + "_" + bfx_url.PREFFERED_FIAT + "\", \"side\": \"" + side + "\", \"type\": \"" + type + "\", \"amount\": \"" + amount + "\" }");
             //return json.JSON_post_auth(bfx_url.base_URL + bfx_url.orders, bfx_settings.key, "{ \"instrument_code\": \"" + symbol + "_" + bfx_url.PREFFERED_FIAT + "\", \"side\": \"" + side + "\", \"type\": \"" + type + "\", \"amount\": \"" + amount + "\" }");
-            return json.JSON_post_auth(bfx_url.base_URL + bfx_url.orders, bfx_settings.key, new string[] { "instrument_code", "side", "type", "amount" }, new string[] { symbol + "_" + bfx_url.PREFFERED_FIAT, side, type, amount });
+            return json.JSON_post_auth(bfx_url.base_URL + bfx_url.orders, bfx_settings.key, new string[] { }, new string[] { }, true, "{\"instrument_code\" : \"" + symbol + "_EUR\", \"side\": \"" + side + "\",\"type\":\"" + type + "\", \"amount\":\"51\", \"client_id\":\"" + id + "\"}");
         }
 
         private void flush_orders()

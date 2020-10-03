@@ -57,6 +57,7 @@
     <Compile Include="EXCHANGE_Bitpanda_Interface.cs" />
     <Compile Include="Scorpion_DATETIME.cs" />
     <Compile Include="Scorpion_LOG.cs" />
+    <Compile Include="Scorpion_CRYPTO_MIN.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

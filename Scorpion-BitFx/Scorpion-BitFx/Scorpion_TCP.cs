@@ -21,6 +21,8 @@ namespace ScorpionBitFx
         public bool start_client(ref string url, ref int port)
         {
             tcp_cl.Connect(url, port);
+            tcp_cl.Delimiter = 0x00;
+            tcp_cl.StringEncoder = System.Text.Encoding.UTF8;
             tcp_cl.DataReceived += Tcp_Cl_DataReceived;
             return tcp_cl.TcpClient.Connected;
         }
@@ -31,7 +33,9 @@ namespace ScorpionBitFx
             IPAddress ipa = ipep.Address;
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("Got string: {0} from {1}", e.MessageString, ipa);
-            do_on.execute_command(e.MessageString);
+            EngineFunctions ef__ = new EngineFunctions();
+            do_on.execute_command(ef__.replace_fakes(ef__.replace_telnet(e.MessageString)));
+            ef__ = null;
             return;
         }
 

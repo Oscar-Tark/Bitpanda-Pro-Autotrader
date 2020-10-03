@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace ScorpionBitFx
 {
     public class Scorpion_DATETIME

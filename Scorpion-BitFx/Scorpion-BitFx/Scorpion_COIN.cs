@@ -10,6 +10,7 @@ namespace ScorpionBitFx
         Thread coin_thread; Timer market_thread;
         COIN_settings cs = new COIN_settings();
         Scorpion_DATETIME scdt = new Scorpion_DATETIME();
+        Scorpion_CRYPTO_MIN crypto_min = new Scorpion_CRYPTO_MIN();
         EXCHANGE ex; 
         ScorpionJSON json = new ScorpionJSON();
         Scorpion_LOG scl;
@@ -92,6 +93,12 @@ namespace ScorpionBitFx
             public double EUR_balance;
             public string current_balance_JSON;
             public int signal; //0=neutral 1=sell 2=buy
+
+            public double min;
+
+            //One time use client order id's
+            public string buy_id;
+            public string sell_id;
 
             JArray transactions;
 
@@ -278,13 +285,16 @@ namespace ScorpionBitFx
         private void buy()
         {
             Console.WriteLine("Buying {0}", cs.symbol);
-            if (cs.EUR_balance > 0)
+            get_min();
+            cs.buy_id = order_id();
+            Console.WriteLine("Got new order id: {0}", cs.buy_id);
+            if (cs.EUR_balance > 0 && check_min_buy())
             {
                 //buy
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.WriteLine("Buying {0} {1} of {2}", cs.EUR_balance, ex.bfx_url.PREFFERED_FIAT, cs.symbol);
+                Console.WriteLine("Buying {0} {1} of {2} | ID: {3}", cs.EUR_balance, ex.bfx_url.PREFFERED_FIAT, cs.symbol, cs.buy_id);
                 Console.ForegroundColor = ConsoleColor.White;
-                string json_buy = ex.xorder(ref cs.symbol, "BUY", "MARKET", (cs.current_price / cs.EUR_balance).ToString());
+                string json_buy = ex.xorder(ref cs.symbol, "BUY", "MARKET", (cs.current_price / cs.EUR_balance).ToString(), cs.buy_id);
 
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine(json_buy);
@@ -292,8 +302,8 @@ namespace ScorpionBitFx
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.WriteLine("Unable to buy not enough {0}: {1}", ex.bfx_url.PREFFERED_FIAT, cs.EUR_balance);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Unable to buy {3} not enough FIAT {0}: {1}, Required minimum {0}: {2}", ex.bfx_url.PREFFERED_FIAT, cs.EUR_balance, cs.min, cs.symbol);
                 Console.ForegroundColor = ConsoleColor.White;
             }
             scl.write("Signal:" + cs.signal + " Symbol:" + cs.symbol + " Current price:" + cs.current_price + " High:" + cs.high + " Low:" + cs.low);
@@ -305,17 +315,55 @@ namespace ScorpionBitFx
             Console.WriteLine("Selling {0}", cs.symbol);
             if (cs.current_balance > 0)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Selling {0} of {1}", cs.current_balance, cs.symbol);
                 Console.ForegroundColor = ConsoleColor.White;
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Unable to sell not enough {0} to sell at {1}", cs.symbol, cs.current_balance);
                 Console.ForegroundColor = ConsoleColor.White;
             }
             scl.write("Signal:" + cs.signal + " Symbol:" + cs.symbol + " Current price:" + cs.current_price + " High:" + cs.high + " Low:" + cs.low + " Tax:" + calculate_tax());
+            return;
+        }
+
+        private string order_id()
+        {
+            return "d75fb03b-b599-49e9-b926-3f0b6d103206";
+            //return crypto_min.GetUniqueKey(8) + "-" + crypto_min.GetUniqueKey(4) + "-" + crypto_min.GetUniqueKey(4) + "-" + crypto_min.GetUniqueKey(4) + "-" + crypto_min.GetUniqueKey(12);
+            //return crypto_min.GetUniqueKey(10);
+        }
+
+        private bool check_min_buy()
+        {
+            if(cs.EUR_balance * cs.current_price >= cs.min)
+                return true;
+            return false;
+        }
+
+        //Gets minimum tradable amount
+        private void get_min()
+        {
+            ex.bfx_vars.instrumentsJSON = ex.xinstruments();
+            JArray jarr = json.jsontoarray(ref ex.bfx_vars.instrumentsJSON);
+            JObject j_inner_base, j_inner_quote;
+            foreach (JObject j_inobjs in jarr)
+            {
+                j_inner_base = j_inobjs.Value<JObject>("base");
+                j_inner_quote = j_inobjs.Value<JObject>("quote");
+                if(j_inner_base.Value<string>("code") == cs.symbol && j_inner_quote.Value<string>("code") == ex.bfx_url.PREFFERED_FIAT)
+                {
+                    cs.min = j_inobjs.Value<double>("min_size");
+                    Console.WriteLine("Min size set to: {0}", cs.min);
+                }
+            }
+            return;
+        }
+
+        private void calculate_wallet()
+        {
             return;
         }
 

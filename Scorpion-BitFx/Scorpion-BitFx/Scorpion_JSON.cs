@@ -34,10 +34,10 @@ namespace ScorpionBitFx
             return ts.Result;
         }
 
-        public string JSON_post_auth(string URL, string AUTH, string[] names, string[] values)
+        public string JSON_post_auth(string URL, string AUTH, string[] names, string[] values, bool has_body, string body)
         {
             Console.WriteLine("auth JSON: " + URL);
-            Task<string> ts = JSON_postAsync_auth(URL, AUTH, names, values);
+            Task<string> ts = JSON_postAsync_auth(URL, AUTH, names, values, has_body, body);
             ts.Wait();
             Console.WriteLine("Done auth JSON: " + URL);
             return ts.Result;
@@ -66,7 +66,7 @@ namespace ScorpionBitFx
             return response;
         }
 
-        private async Task<string> JSON_postAsync_auth(string URL, string AUTH, string[] name, string[] value)
+        private async Task<string> JSON_postAsync_auth(string URL, string AUTH, string[] name, string[] value, bool has_body, string body)
         {
             var client = new RestClient(URL);
             client.AddDefaultHeader("Content-Type", "application/json ");
@@ -74,14 +74,13 @@ namespace ScorpionBitFx
             client.AddDefaultHeader("Authorization", "Bearer " + AUTH);
             var request = new RestRequest(Method.POST);
 
-            for(int i = 0; i < name.Length; i++)
-            {
+            for (int i = 0; i < name.Length; i++)
                 request.AddParameter(name[i], value[i]);
-            }
+
+            if(has_body && body != "")
+                request.AddParameter("application/json", body, ParameterType.RequestBody);
 
             request.RequestFormat = DataFormat.Json;
-            //request.AddParameter()
-            Console.WriteLine(request.Body);
             var response = await client.PostAsync<string>(request, CancellationToken.None);
 
             return response;
