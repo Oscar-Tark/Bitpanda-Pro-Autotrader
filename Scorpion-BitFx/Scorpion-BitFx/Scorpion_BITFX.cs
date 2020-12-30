@@ -18,7 +18,7 @@ namespace ScorpionBitFx
         {
             Do_on = fm1;
             Do_on.write_cui("Use the start function in order to initialize an exchange:\n\nstart::*exchange *name\n***************************************************\n");
-
+            return;
         }
 
         //Does not support var_get. *var will take actual value as string *var results as 'var'. [2] is where vars start
@@ -29,7 +29,7 @@ namespace ScorpionBitFx
 
             try
             {
-                Do_on.write_cui(">> Executing: " + command[0]);
+                Do_on.write_cui(">> Executing function: " + command[0]);
                 this.GetType().GetMethod(command[0], System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).Invoke(this, new object[] { command });
                 success = true;
             }
@@ -99,10 +99,11 @@ namespace ScorpionBitFx
         private void engine(object state)
         {
             //Get API key
-            Console.WriteLine("Enter your Exchange key:");
+            Console.WriteLine(">> Enter your Exchange key:");
             Console.Out.Flush();
             xkey(Console.In.ReadLine());
             bfx_url.period = "1";
+
             //Get basic data
             xcoins();
             xfees();

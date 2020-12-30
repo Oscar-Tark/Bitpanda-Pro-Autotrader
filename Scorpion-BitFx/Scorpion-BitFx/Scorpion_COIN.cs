@@ -11,7 +11,7 @@ namespace ScorpionBitFx
         COIN_settings cs = new COIN_settings();
         Scorpion_DATETIME scdt = new Scorpion_DATETIME();
         Scorpion_CRYPTO_MIN crypto_min = new Scorpion_CRYPTO_MIN();
-        EXCHANGE ex; 
+        EXCHANGE ex;
         ScorpionJSON json = new ScorpionJSON();
         Scorpion_LOG scl;
 
@@ -26,17 +26,18 @@ namespace ScorpionBitFx
         {
             scl = new Scorpion_LOG();
             ex = exchange;
-            Console.WriteLine("Starting coin {0} with precision {1}", symbol, precision);
+            Scorpion_Write.write_success("Starting coin " + symbol + " with precision " + precision);
             cs.buy_sell_type = Autobuysell;
-            Console.WriteLine("Automatic buy sells: {0}", cs.buy_sell_type);
+            Scorpion_Write.write_success("Automatic buy/sells: " + cs.buy_sell_type);
 
             if (!Autobuysell)
             {
-                Console.WriteLine("Please enter your buy price preference: ");
+                Scorpion_Write.write_input("Please enter your buy price preference: ");
                 cs.buy_sell_type_buy_at = Convert.ToDouble(Console.ReadLine());
-                Console.WriteLine("Please enter your sell price preference: ");
+                Scorpion_Write.write_input("Please enter your sell price preference: ");
                 cs.buy_sell_type_sell_at = Convert.ToDouble(Console.ReadLine());
             }
+
             cs.precision = precision;
             cs.symbol = symbol;
             cs.period = "1";
@@ -112,7 +113,7 @@ namespace ScorpionBitFx
         private void start_ticker()
         {
             const int interval = 30000;
-            Console.WriteLine("Running coin ticker/trader {0} every: {1} seconds", cs.symbol, (interval/1000));
+            Scorpion_Write.write_success("Running coin ticker/trader " + cs.symbol + " every: " + (interval / 1000) + " seconds");
             market_thread = new Timer(coin_thread_start);
             market_thread.Change(0, interval);
             return;
@@ -157,27 +158,28 @@ namespace ScorpionBitFx
                 cs.low_average = coin_average(cs.lows);
                 cs.low = cs.lows.Min();
                 cs.high = cs.highs.Max();
-
                 cs.high_mid_average = coin_average(new double[2] { cs.high, cs.high_average });
                 cs.low_mid_average = coin_average(new double[2] { cs.low, cs.low_average });
 
                 //Get Current price and check against averages to create signal
                 //Code here
-
                 get_signal();
                 trade();
+
+                if (!cs.buy_sell_type)
+                    Scorpion_Write.write_notice("Manual buy/sell active [Buy at: " + cs.buy_sell_type_buy_at + "] [Sell at: " + cs.buy_sell_type_sell_at + "]");
 
                 Console.WriteLine("Decoded {0} on (Auto Buy/Sell: {6}) [Current price: {5}][High: {1}][Low: {2}][Average High: {3}][Average Low: {4}][Mid-Average High: {7}][Mid-Average Low: {8}]", cs.symbol, cs.high, cs.low, cs.high_average, cs.low_average, cs.current_price, cs.buy_sell_type, cs.high_mid_average, cs.low_mid_average);
 
                 if (cs.failed == true)
                 {
                     cs.failed = false;
-                    Console.WriteLine("Failure signals cleared");
+                    Scorpion_Write.write_notice("Failure signals cleared");
                 }
             }
-            catch
+            catch (Exception e)
             {
-                Console.WriteLine("Unable to decode {0}. Aborting on next failure", cs.symbol);
+                Scorpion_Write.write_error("Unable to decode " + cs.symbol + ". Aborting on next failure. Error[" + e.Message + "])\n");
                 if (cs.failed)
                     kill();
                 cs.failed = true;
@@ -192,7 +194,7 @@ namespace ScorpionBitFx
 
         private void kill()
         {
-            Console.WriteLine("Aborting {0}", cs.symbol);
+            Scorpion_Write.write_error("Aborting " + cs.symbol);
             market_thread.Dispose();
             coin_thread.Abort();
             return;
@@ -238,31 +240,23 @@ namespace ScorpionBitFx
                 sell();
             }
             else
-                Console.WriteLine("Neutral on {0}", cs.symbol);
-
-            if (cs.buy_sell_type == false)
-                kill();
+                Scorpion_Write.write_notice("Neutral on " + cs.symbol);
+            return;
         }
 
         //Not the best way, but ok for now in a small scale
         private void get_balance()
         {
             cs.current_balance_JSON = ex.xwallet(cs.symbol, cs.key);
-            //Console.WriteLine(cs.current_balance_JSON);
             JObject jobj = json.jsontoobject(ref cs.current_balance_JSON);
             cs.account_id = jobj.Value<string>("account_id");
-            //Console.WriteLine("VAL: {0}", cs.account_id);
 
-
-            //Console.WriteLine("Code: {0}", jobj["balances"][0]["currency_code"]);
             JArray jarr = (JArray)jobj["balances"];
 
-            foreach(JObject j_inobjs in jarr)
+            foreach (JObject j_inobjs in jarr)
             {
                 if (j_inobjs.Value<string>("currency_code") == ex.bfx_url.PREFFERED_FIAT)
-                {
                     cs.EUR_balance = j_inobjs.Value<double>("available");
-                }
                 else if (j_inobjs.Value<string>("currency_code") == cs.symbol)
                 {
                     cs.current_balance = j_inobjs.Value<double>("available");
@@ -271,74 +265,53 @@ namespace ScorpionBitFx
             }
             Console.WriteLine("{0} at: {1}", ex.bfx_url.PREFFERED_FIAT, cs.EUR_balance);
             Console.WriteLine("{0} at: {1}", cs.symbol, cs.current_balance);
-            //JToken bals = jobj["balances"];
-
-            /*foreach (JObject jobj in jarr)
-            {
-                //foreach(JObject in )
-                //string code = (jobj.Value<string>("currency_code"));
-                //Console.WriteLine(code);
-            }*/
             return;
         }
 
         private void buy()
         {
-            Console.WriteLine("Buying {0}", cs.symbol);
+            Scorpion_Write.write("Buying " + cs.symbol);
             get_min();
             cs.buy_id = order_id();
-            Console.WriteLine("Got new order id: {0}", cs.buy_id);
+            Scorpion_Write.write("Got new order id: " + cs.buy_id);
             if (cs.EUR_balance > 0 && check_min_buy())
             {
                 //buy
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.WriteLine("Buying {0} {1} of {2} | ID: {3}", cs.EUR_balance, ex.bfx_url.PREFFERED_FIAT, cs.symbol, cs.buy_id);
-                Console.ForegroundColor = ConsoleColor.White;
-                string json_buy = ex.xorder(ref cs.symbol, "BUY", "MARKET", (cs.current_price / cs.EUR_balance).ToString(), cs.buy_id);
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine(json_buy);
-                Console.ForegroundColor = ConsoleColor.White;
+                Scorpion_Write.write_success("Buying " + cs.EUR_balance + " " + ex.bfx_url.PREFFERED_FIAT + " | ID: " + cs.buy_id);
+                string json_buy = ex.xorder(ref cs.symbol, "BUY", "MARKET", convert_comma_dot((cs.EUR_balance / cs.current_price).ToString()), cs.buy_id);
+                Scorpion_Write.write_success(json_buy);
             }
             else
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Unable to buy {3} not enough FIAT {0}: {1}, Required minimum {0}: {2}", ex.bfx_url.PREFFERED_FIAT, cs.EUR_balance, cs.min, cs.symbol);
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+                Scorpion_Write.write_error("Unable to buy " + cs.symbol + " not enough FIAT " + ex.bfx_url.PREFFERED_FIAT + ": " + cs.EUR_balance + ", Required minimum " + ex.bfx_url.PREFFERED_FIAT + ": " + cs.min);
+            
             scl.write("Signal:" + cs.signal + " Symbol:" + cs.symbol + " Current price:" + cs.current_price + " High:" + cs.high + " Low:" + cs.low);
             return;
         }
 
         private void sell()
         {
-            Console.WriteLine("Selling {0}", cs.symbol);
+            Scorpion_Write.write("Selling " + cs.symbol);
+            cs.sell_id = order_id();
             if (cs.current_balance > 0)
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Selling {0} of {1}", cs.current_balance, cs.symbol);
-                Console.ForegroundColor = ConsoleColor.White;
+                Scorpion_Write.write_success("Selling " + cs.current_balance + " of " + cs.symbol + " | ID: " + cs.sell_id);
+                string json_sell = ex.xorder(ref cs.symbol, "SELL", "MARKET", convert_comma_dot(cs.current_balance.ToString()), cs.sell_id);
+                Scorpion_Write.write_success(json_sell);
             }
             else
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Unable to sell not enough {0} to sell at {1}", cs.symbol, cs.current_balance);
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+                Scorpion_Write.write_error("Unable to sell not enough " + cs.symbol + " to sell at " + cs.current_balance);
             scl.write("Signal:" + cs.signal + " Symbol:" + cs.symbol + " Current price:" + cs.current_price + " High:" + cs.high + " Low:" + cs.low + " Tax:" + calculate_tax());
             return;
         }
 
         private string order_id()
         {
-            return "d75fb03b-b599-49e9-b926-3f0b6d103206";
-            //return crypto_min.GetUniqueKey(8) + "-" + crypto_min.GetUniqueKey(4) + "-" + crypto_min.GetUniqueKey(4) + "-" + crypto_min.GetUniqueKey(4) + "-" + crypto_min.GetUniqueKey(12);
-            //return crypto_min.GetUniqueKey(10);
+            return crypto_min.GetUniqueKey(8) + crypto_min.GetUniqueKey(4) + "-" + crypto_min.GetUniqueKey(4) + "-" + crypto_min.GetUniqueKey(4) + "-" + crypto_min.GetUniqueKey(12);
         }
 
         private bool check_min_buy()
         {
-            if(cs.EUR_balance * cs.current_price >= cs.min)
+            if (cs.EUR_balance > cs.min)
                 return true;
             return false;
         }
@@ -353,7 +326,7 @@ namespace ScorpionBitFx
             {
                 j_inner_base = j_inobjs.Value<JObject>("base");
                 j_inner_quote = j_inobjs.Value<JObject>("quote");
-                if(j_inner_base.Value<string>("code") == cs.symbol && j_inner_quote.Value<string>("code") == ex.bfx_url.PREFFERED_FIAT)
+                if (j_inner_base.Value<string>("code") == cs.symbol && j_inner_quote.Value<string>("code") == ex.bfx_url.PREFFERED_FIAT)
                 {
                     cs.min = j_inobjs.Value<double>("min_size");
                     Console.WriteLine("Min size set to: {0}", cs.min);
@@ -370,6 +343,12 @@ namespace ScorpionBitFx
         private double calculate_tax()
         {
             return (cs.current_price / 100) * cs.current_price;
+        }
+
+        private string convert_comma_dot(string amount)
+        {
+            amount = amount.Remove(amount.IndexOf(",", StringComparison.CurrentCulture));
+            return amount;
         }
 
         private void clear_all()

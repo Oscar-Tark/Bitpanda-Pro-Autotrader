@@ -9,7 +9,7 @@ namespace ScorpionBitFx
         public void xkey(string key)
         {
             bfx_settings.key = key;
-            Console.WriteLine("Set API key to: {0}", key);
+            Console.WriteLine(">> Set API key to: {0}", key);
             return;
         }
 
@@ -31,16 +31,16 @@ namespace ScorpionBitFx
             bfx_vars.instrumentsJSON = xinstruments();
             foreach (JObject jobj in json.jsontoarray(ref bfx_vars.currenciesJSON))
             {
-                // Run all: if (jobj.Value<string>("code") != "EUR" && jobj.Value<string>("code") != "CHF")
+                //Run all: if (jobj.Value<string>("code") != "EUR" && jobj.Value<string>("code") != "CHF")
                 //Run one only:
                 if(jobj.Value<string>("code") == "XRP")
                 {
-                    Console.WriteLine("Run COIN: {0}? (Y/N)", jobj.Value<string>("code"));
+                    Console.WriteLine(">> Run COIN: {0}? (Y/N)", jobj.Value<string>("code"));
                     if (Console.ReadLine().ToLower() == "y")
                     {
                         if (!auto_buy_sell_all)
                         {
-                            Console.WriteLine("Automatic buy sells for {0}? (Y/N/ALL)", jobj.Value<string>("code"));
+                            Console.WriteLine(">> Automatic buy sells for {0}? (Y/N/ALL)", jobj.Value<string>("code"));
                             yna = Console.ReadLine().ToLower();
                             if (yna == "n")
                                 auto_by_sell = false;
@@ -61,7 +61,7 @@ namespace ScorpionBitFx
             foreach(COIN cs in EXCHANGE_COINS)
                 cs.start();
 
-            Console.WriteLine("Total available coins are: {0}", EXCHANGE_COINS_JSON.Count);
+            Console.WriteLine(">> Total available coins are: {0}", EXCHANGE_COINS_JSON.Count);
             return;
         }
 
@@ -75,9 +75,7 @@ namespace ScorpionBitFx
         {
             //::*fiat
             //Not available as EUR is the only currency
-            Console.WriteLine("Preffered FIAT currency automatically set to {0}", bfx_url.PREFFERED_FIAT);
-            //Console.WriteLine("Please enter the preffered FIAT currency you would like to trade in (Ex. EUR, USD):");
-            //bfx_url.PREFFERED_FIAT = Console.ReadLine();
+            Console.WriteLine(">> Preffered FIAT currency automatically set to {0}", bfx_url.PREFFERED_FIAT);
             return;
         }
 
@@ -91,7 +89,6 @@ namespace ScorpionBitFx
         public string xinstrumentticker(string symbol)
         {
             //Gets current market ticker values for Crypto symbol
-            //Console.WriteLine(bfx_url.public_URL + bfx_url.marketticker + symbol + "_" + bfx_url.PREFFERED_FIAT);
             return json.JSON_get(bfx_url.public_URL + bfx_url.marketticker + symbol + "_" + bfx_url.PREFFERED_FIAT);
         }
 
@@ -108,9 +105,8 @@ namespace ScorpionBitFx
 
         public string xorder(ref string symbol, string side, string type, string amount, string id)
         {
-            //Console.WriteLine("order: {0}", "{ \"instrument_code\": \"" + symbol + "_" + bfx_url.PREFFERED_FIAT + "\", \"side\": \"" + side + "\", \"type\": \"" + type + "\", \"amount\": \"" + amount + "\" }");
-            //return json.JSON_post_auth(bfx_url.base_URL + bfx_url.orders, bfx_settings.key, "{ \"instrument_code\": \"" + symbol + "_" + bfx_url.PREFFERED_FIAT + "\", \"side\": \"" + side + "\", \"type\": \"" + type + "\", \"amount\": \"" + amount + "\" }");
-            return json.JSON_post_auth(bfx_url.base_URL + bfx_url.orders, bfx_settings.key, new string[] { }, new string[] { }, true, "{\"instrument_code\" : \"" + symbol + "_EUR\", \"side\": \"" + side + "\",\"type\":\"" + type + "\", \"amount\":\"51\", \"client_id\":\"" + id + "\"}");
+            Scorpion_Write.write_notice("Amount to " + type + " is: " + amount);
+            return json.JSON_post_auth(bfx_url.base_URL + bfx_url.orders, bfx_settings.key, new string[] { }, new string[] { }, true, "{\"instrument_code\" : \"" + symbol + "_EUR\", \"side\": \"" + side + "\",\"type\":\"" + type + "\", \"amount\":\"" + amount + "\"}");//, \"client_id\":\"" + id + "\"}");
         }
 
         private void flush_orders()
@@ -118,6 +114,8 @@ namespace ScorpionBitFx
 
             return;
         }
+
+        //OLD
         /*public void xinstruments()
         {
             //::

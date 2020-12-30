@@ -32,9 +32,11 @@ namespace ScorpionBitFx
             IPEndPoint ipep = (IPEndPoint)e.TcpClient.Client.RemoteEndPoint;
             IPAddress ipa = ipep.Address;
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("Got string: {0} from {1}", e.MessageString, ipa);
             EngineFunctions ef__ = new EngineFunctions();
-            do_on.execute_command(ef__.replace_fakes(ef__.replace_telnet(e.MessageString)));
+            string command = ef__.replace_fakes(ef__.replace_telnet(e.MessageString));
+            Console.WriteLine("[NETWORK:{1}] {0}", command.TrimEnd(new char[] { Convert.ToChar(0x13) }), ipa);
+            do_on.execute_command(command.TrimEnd(new char[] { Convert.ToChar(0x13) }));
+
             ef__ = null;
             return;
         }

@@ -18,21 +18,21 @@ namespace ScorpionBitFx
         public Scorpion()
         {
             //Start TCP
-            write_cui("Scorpion BITFX [Cryptocurrency trading] hub v0.1b GNU GPL 2020+ <Oscar Arjun Singh Tark>");
+            write_cui("Scorpion BITFX :) [Cryptocurrency trading] hub v0.1b GNU GPL 2020+ <Oscar Arjun Singh Tark>");
 
             //NETWORK SESSION DISABLED TILL FURTHER NOTICE
             //REASON: SYSTEM SHOULD NOT USE NESTED READLINES, SHIFT EVERY PARAMETER TO BE SET WITH A FUNCTION. I WOULD HAVE TO REDESIGN THE PROGRAM FOR THAT AND I'M JUST TOO LAZY FO DAT.
-            /*Console.WriteLine("Run as networked instance? (Y/N)");
+            Console.WriteLine("Run as networked instance? (Y/N)");
 
             if (Console.ReadLine().ToLower() == "y")
             {
-                write_cui("Please enter a valid URL and PORT to bind to:");
+                write_cui("Please enter a valid IP address to bind to (PORT is hardcoded to 8664):");
                 try
                 {
-                    tcp = new Scorpion_TCP(Console.ReadLine(), Convert.ToInt32(Console.ReadLine()), this);
+                    tcp = new Scorpion_TCP(Console.ReadLine(), 8664, this);
                 }
                 catch (Exception erty) { write_error("Unable to establish a network server due to: " + erty.Message); }
-            }*/
+            }
             bfx = new Scorpion_BITFX_BITPANDA(this);
             while (true)
                 execute_command(Console.ReadLine());
