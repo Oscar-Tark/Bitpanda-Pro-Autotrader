@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 
 namespace ScorpionBitFx
 {
@@ -12,30 +13,21 @@ namespace ScorpionBitFx
 
     public class Scorpion
     {
-        Scorpion_TCP tcp;
-        public Scorpion_BITFX_BITPANDA bfx;
+        public Scorpion_BITFX bfx;
+        public ArrayList al_out = new ArrayList();
 
         public Scorpion()
         {
             //Start TCP
-            write_cui("Scorpion BITFX :) [Cryptocurrency trading] hub v0.1b GNU GPL 2020+ <Oscar Arjun Singh Tark>");
-
-            //NETWORK SESSION DISABLED TILL FURTHER NOTICE
-            //REASON: SYSTEM SHOULD NOT USE NESTED READLINES, SHIFT EVERY PARAMETER TO BE SET WITH A FUNCTION. I WOULD HAVE TO REDESIGN THE PROGRAM FOR THAT AND I'M JUST TOO LAZY FO DAT.
-            Console.WriteLine("Run as networked instance? (Y/N)");
-
-            if (Console.ReadLine().ToLower() == "y")
-            {
-                write_cui("Please enter a valid IP address to bind to (PORT is hardcoded to 8664):");
-                try
-                {
-                    tcp = new Scorpion_TCP(Console.ReadLine(), 8664, this);
-                }
-                catch (Exception erty) { write_error("Unable to establish a network server due to: " + erty.Message); }
-            }
-            bfx = new Scorpion_BITFX_BITPANDA(this);
-            while (true)
-                execute_command(Console.ReadLine());
+            write_cui("Scorpion Bitpanda Pro AutoTrader [0_0]_/ [Cryptocurrency trading] hub v0.1a GNU GPL 2020+ <Oscar Arjun Singh Tark>\n\n--------------------------------------------");
+            write_cui("Please enter your API key:");
+            string api = Console.ReadLine();
+            write_cui("Please enter your preferred exchange:");
+            string exchange = Console.ReadLine();
+            bfx = new Scorpion_BITFX(this);
+            bfx.start(exchange, null, api);
+            //while (true)
+            //    Console.ReadLine();
         }
 
         private void wasted_space(object state)
@@ -43,20 +35,6 @@ namespace ScorpionBitFx
             //A dirty work around to not make the console shutdown
             state = null;
             return;
-        }
-
-        public bool execute_command(string command)
-        {
-            //bfx::function::mongocommand
-            Console.ForegroundColor = ConsoleColor.White;
-            string[] command_vars = split_command(ref command);
-            return bfx.do_bitfx(ref command_vars);
-        }
-
-        static string[] unwanted = { "::", "*" };
-        private static string[] split_command(ref string command)
-        {
-            return command.Replace("\n", "").Replace(" ", "").Replace(",", "").Split(unwanted, StringSplitOptions.RemoveEmptyEntries);
         }
 
         public void write_cui(string STR_)

@@ -1,15 +1,19 @@
 ﻿<Properties StartupConfiguration="{67488426-03D8-42CE-80BC-9ED081C91D47}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Scorpion-BitFx/EXCHANGE_Bitpanda_Interface.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Scorpion-BitFx/Bitpanda/Scorpion_Bitpanda.cs">
     <Files>
-      <File FileName="Scorpion-BitFx/EXCHANGE_Bitpanda_Interface.cs" Line="78" Column="110" />
-      <File FileName="Scorpion-BitFx/Scorpion_COIN.cs" Line="314" Column="10" />
+      <File FileName="Scorpion-BitFx/Scorpion_BITFX.cs" Line="65" Column="21" />
+      <File FileName="Scorpion-BitFx/Bitpanda/Scorpion_Bitpanda.cs" Line="199" Column="22" />
+      <File FileName="Scorpion-BitFx/Program.cs" Line="28" Column="21" />
+      <File FileName="Scorpion-BitFx/Bitpanda/EXCHANGE_Bitpanda_Interface.cs" Line="72" Column="23" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Scorpion-BitFx" expanded="True">
             <Node name="Scorpion-BitFx" expanded="True">
-              <Node name="EXCHANGE_Bitpanda_Interface.cs" selected="True" />
+              <Node name="Bitpanda" expanded="True">
+                <Node name="Scorpion_Bitpanda.cs" selected="True" />
+              </Node>
             </Node>
           </Node>
         </State>

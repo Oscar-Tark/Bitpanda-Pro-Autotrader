@@ -29,7 +29,7 @@ namespace ScorpionBitFx
 
         void Tcp_Cl_DataReceived(object sender, Message e)
         {
-            IPEndPoint ipep = (IPEndPoint)e.TcpClient.Client.RemoteEndPoint;
+            /*IPEndPoint ipep = (IPEndPoint)e.TcpClient.Client.RemoteEndPoint;
             IPAddress ipa = ipep.Address;
             Console.ForegroundColor = ConsoleColor.Blue;
             EngineFunctions ef__ = new EngineFunctions();
@@ -38,7 +38,7 @@ namespace ScorpionBitFx
             do_on.execute_command(command.TrimEnd(new char[] { Convert.ToChar(0x13) }));
 
             ef__ = null;
-            return;
+            return;*/
         }
 
 

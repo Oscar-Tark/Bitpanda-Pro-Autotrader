@@ -7,13 +7,14 @@ namespace ScorpionBitFx
 {
     public class COIN
     {
-        Thread coin_thread; Timer market_thread;
+        Thread coin_thread;
+        Timer market_thread;
         COIN_settings cs = new COIN_settings();
         Scorpion_DATETIME scdt = new Scorpion_DATETIME();
         Scorpion_CRYPTO_MIN crypto_min = new Scorpion_CRYPTO_MIN();
         EXCHANGE ex;
         ScorpionJSON json = new ScorpionJSON();
-        Scorpion_LOG scl;
+        Scorpion_LOG scl = new Scorpion_LOG();
 
         enum signal_translations
         {
@@ -24,19 +25,19 @@ namespace ScorpionBitFx
 
         public COIN(string symbol, int precision, EXCHANGE exchange, bool Autobuysell, string auth)
         {
-            scl = new Scorpion_LOG();
+            //scl = new Scorpion_LOG();
             ex = exchange;
             Scorpion_Write.write_success("Starting coin " + symbol + " with precision " + precision);
             cs.buy_sell_type = Autobuysell;
             Scorpion_Write.write_success("Automatic buy/sells: " + cs.buy_sell_type);
 
-            if (!Autobuysell)
+            /*if (!Autobuysell)
             {
                 Scorpion_Write.write_input("Please enter your buy price preference: ");
                 cs.buy_sell_type_buy_at = Convert.ToDouble(Console.ReadLine());
                 Scorpion_Write.write_input("Please enter your sell price preference: ");
                 cs.buy_sell_type_sell_at = Convert.ToDouble(Console.ReadLine());
-            }
+            }*/
 
             cs.precision = precision;
             cs.symbol = symbol;
@@ -47,13 +48,63 @@ namespace ScorpionBitFx
             cs.current_balance = 0;
             cs.EUR_balance = 0;
 
-            //start_ticker();
-            return;
+            string line = null;
+            while (true)
+            {
+                line = Console.ReadLine();
+
+                if (cs.buy_sell_type)
+                {
+                    if (line == "autotrade start")
+                        start();
+                    else if (line == "autotrade stop")
+                        stop();
+                    else if (line == "autotrade interval")
+                        continue;
+                    else if (line == "manual")
+                    {
+                        stop();
+                        manual();
+                    }
+
+                    continue;
+                }
+
+                if(!cs.buy_sell_type)
+                {
+                    if (line == "trade")
+                        market();
+                    else if (line == "auto")
+                        continue;
+
+                    continue;
+                }
+
+
+                if (line == "candles")
+                    continue;
+                else if (line == "change coin")
+                    continue;
+                else if (line == "exit")
+                    Environment.Exit(0);
+                else
+                    Scorpion_Write.write_notice("Commands available are:\v\r> trade: To manually run an autotrade\n> autorade start: To start the auto trade system at specified intervals\n> autotrade stop: Top stop the intervalled trading system");
+            }
         }
 
         public void start()
         {
+            Scorpion_Write.write_success("Starting intervalled autotrade");
             start_ticker();
+            return;
+        }
+
+        public void stop()
+        {
+            if (market_thread == null)
+                return;
+            Scorpion_Write.write_success("Stopping intervalled autotrade");
+            market_thread.Dispose();
             return;
         }
 
@@ -112,7 +163,7 @@ namespace ScorpionBitFx
 
         private void start_ticker()
         {
-            const int interval = 30000;
+            const int interval = 60000;
             Scorpion_Write.write_success("Running coin ticker/trader " + cs.symbol + " every: " + (interval / 1000) + " seconds");
             market_thread = new Timer(coin_thread_start);
             market_thread.Change(0, interval);
@@ -125,6 +176,24 @@ namespace ScorpionBitFx
             coin_thread = new Thread(coin_threads);
             coin_thread.Priority = ThreadPriority.AboveNormal;
             coin_thread.Start();
+        }
+
+        private void manual()
+        {
+            cs.buy_sell_type = false;
+            Scorpion_Write.write_notice("Note!: Autotrading is off, to run autotrade functions run the command 'auto'");
+            Scorpion_Write.write_input("Please enter your buy price preference: ");
+            cs.buy_sell_type_buy_at = Convert.ToDouble(Console.ReadLine());
+            Scorpion_Write.write_input("Please enter your sell price preference: ");
+            cs.buy_sell_type_sell_at = Convert.ToDouble(Console.ReadLine());
+            return;
+        }
+
+        private void auto()
+        {
+            Console.WriteLine("Your previous manual thresholds will remain at:\v\r> Buy: [{0}]\n> Sell: [{1}]", cs.buy_sell_type_buy_at, cs.buy_sell_type_sell_at);
+            cs.buy_sell_type = true;
+            return;
         }
 
         private void market()
@@ -222,6 +291,7 @@ namespace ScorpionBitFx
                 else cs.signal = 0;
             }
             Console.WriteLine("Signal for {0} set to {1}", cs.symbol, cs.signal);
+            scl.write("Signal for " + cs.symbol + " set to " + cs.signal);
             return;
         }
 
@@ -240,7 +310,10 @@ namespace ScorpionBitFx
                 sell();
             }
             else
+            {
                 Scorpion_Write.write_notice("Neutral on " + cs.symbol);
+                scl.write("Neutral on " + cs.symbol);
+            }
             return;
         }
 
@@ -265,6 +338,7 @@ namespace ScorpionBitFx
             }
             Console.WriteLine("{0} at: {1}", ex.bfx_url.PREFFERED_FIAT, cs.EUR_balance);
             Console.WriteLine("{0} at: {1}", cs.symbol, cs.current_balance);
+            scl.write(ex.bfx_url.PREFFERED_FIAT + " at " + cs.EUR_balance);
             return;
         }
 
@@ -274,16 +348,20 @@ namespace ScorpionBitFx
             get_min();
             cs.buy_id = order_id();
             Scorpion_Write.write("Got new order id: " + cs.buy_id);
+            scl.write("Got new order id: " + cs.buy_id);
             if (cs.EUR_balance > 0 && check_min_buy())
             {
                 //buy
                 Scorpion_Write.write_success("Buying " + cs.EUR_balance + " " + ex.bfx_url.PREFFERED_FIAT + " | ID: " + cs.buy_id);
                 string json_buy = ex.xorder(ref cs.symbol, "BUY", "MARKET", convert_comma_dot((cs.EUR_balance / cs.current_price).ToString()), cs.buy_id);
                 Scorpion_Write.write_success(json_buy);
+                scl.write(json_buy);
             }
             else
+            {
                 Scorpion_Write.write_error("Unable to buy " + cs.symbol + " not enough FIAT " + ex.bfx_url.PREFFERED_FIAT + ": " + cs.EUR_balance + ", Required minimum " + ex.bfx_url.PREFFERED_FIAT + ": " + cs.min);
-            
+                scl.write("Unable to buy " + cs.symbol + " not enough FIAT " + ex.bfx_url.PREFFERED_FIAT + ": " + cs.EUR_balance + ", Required minimum " + ex.bfx_url.PREFFERED_FIAT + ": " + cs.min);
+            }
             scl.write("Signal:" + cs.signal + " Symbol:" + cs.symbol + " Current price:" + cs.current_price + " High:" + cs.high + " Low:" + cs.low);
             return;
         }
@@ -297,9 +375,13 @@ namespace ScorpionBitFx
                 Scorpion_Write.write_success("Selling " + cs.current_balance + " of " + cs.symbol + " | ID: " + cs.sell_id);
                 string json_sell = ex.xorder(ref cs.symbol, "SELL", "MARKET", convert_comma_dot(cs.current_balance.ToString()), cs.sell_id);
                 Scorpion_Write.write_success(json_sell);
+                scl.write(json_sell);
             }
             else
+            {
                 Scorpion_Write.write_error("Unable to sell not enough " + cs.symbol + " to sell at " + cs.current_balance);
+                scl.write("Unable to sell not enough " + cs.symbol + " to sell at " + cs.current_balance);
+            }
             scl.write("Signal:" + cs.signal + " Symbol:" + cs.symbol + " Current price:" + cs.current_price + " High:" + cs.high + " Low:" + cs.low + " Tax:" + calculate_tax());
             return;
         }

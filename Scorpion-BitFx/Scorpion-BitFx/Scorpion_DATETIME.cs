@@ -13,8 +13,7 @@ namespace ScorpionBitFx
             end = DateTime.Now;
 
             start = start.Subtract(new TimeSpan(7, 0, 0, 0, 0));
-
-            return new string[4] { start.ToString("yyyy-MM-dd"), start.ToShortTimeString(), end.ToString("yyyy-MM-dd"), end.ToShortTimeString() };
+            return new string[4] { start.ToString("yyyy-MM-dd"), start.ToString("HH:mm"), end.ToString("yyyy-MM-dd"), end.ToString("HH:mm") };
         }
     }
 }

@@ -26,5 +26,10 @@ namespace ScorpionBitFx
             File.AppendAllText(dir, to_write);
             return;
         }
+
+        public void test()
+        {
+            Console.WriteLine("WORKING");
+        }
     }
 }

@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>ScorpionBitFx</RootNamespace>
     <AssemblyName>Scorpion-BitFx</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -99,6 +99,13 @@
     <Reference Include="Microsoft.ML.Transforms">
       <HintPath>..\packages\Microsoft.ML.1.5.4\lib\netstandard2.0\Microsoft.ML.Transforms.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="CryptoExchange.Net">
+      <HintPath>..\packages\CryptoExchange.Net.4.0.1\lib\netstandard2.0\CryptoExchange.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -106,20 +113,20 @@
     <Compile Include="Scorpion_JSON.cs" />
     <Compile Include="Scorpion_TCP.cs" />
     <Compile Include="Scorpion_BITFX.cs" />
-    <Compile Include="Scorpion_BITFX_objects.cs" />
-    <Compile Include="Scorpion_COIN.cs" />
-    <Compile Include="EXCHANGE_Bitpanda.cs" />
-    <Compile Include="EXCHANGE_Bitpanda_Interface.cs" />
     <Compile Include="Scorpion_DATETIME.cs" />
     <Compile Include="Scorpion_LOG.cs" />
     <Compile Include="Scorpion_CRYPTO_MIN.cs" />
     <Compile Include="Scorpion_Write.cs" />
+    <Compile Include="Bitpanda\EXCHANGE_Bitpanda.cs" />
+    <Compile Include="Bitpanda\EXCHANGE_Bitpanda_Interface.cs" />
+    <Compile Include="Bitpanda\Scorpion_Bitpanda.cs" />
+    <Compile Include="Bitpanda\Scorpion_Bitpanda_objects.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="EXHANGES\" />
+    <Folder Include="Bitpanda\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.ML.1.5.4\build\netstandard2.0\Microsoft.ML.targets" Condition="Exists('..\packages\Microsoft.ML.1.5.4\build\netstandard2.0\Microsoft.ML.targets')" />
